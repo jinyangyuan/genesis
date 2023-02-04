@@ -148,6 +148,9 @@ def main():
 
     # Load data
     data_loaders = fet.load(config.data_config, config)
+    for key in data_loaders:
+        data_loaders[key].generator = torch.Generator(device='cuda')
+        data_loaders[key].sampler.generator = data_loaders[key].generator
     num_elements = 3 * config.img_size**2  # Assume three input channels
 
     # Load model

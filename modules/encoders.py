@@ -34,7 +34,7 @@ class MONetCompEncoder(nn.Module):
                           nn.Conv2d(2*c, 2*c, 3, 2, 1), act,
                           B.Flatten(),
                           nn.Linear(nin_mlp, nhid_mlp), act,
-                          nn.Linear(nhid_mlp, 2*self.ldim))
+                          nn.Linear(nhid_mlp, 2*self.ldim * cfg.K_steps))
 
     def forward(self, x):
         return self.module(x)

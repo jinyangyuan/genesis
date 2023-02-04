@@ -34,7 +34,7 @@ class ComponentVAE(nn.Module):
         # Sub-Modules
         self.encoder_module = MONetCompEncoder(cfg=cfg, act=act)
         self.decoder_module = BroadcastDecoder(
-            in_chnls=self.ldim,
+            in_chnls=self.ldim * cfg.K_steps,
             out_chnls=nout,
             h_chnls=cfg.comp_dec_channels,
             num_layers=cfg.comp_dec_layers,

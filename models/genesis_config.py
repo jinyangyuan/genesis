@@ -62,7 +62,7 @@ class Genesis(nn.Module):
         super(Genesis, self).__init__()
         # --- Configuration ---
         # Data dependent config
-        self.K_steps = cfg.K_steps
+        self.K_steps = 1
         self.img_size = cfg.img_size
         # Model config
         self.two_stage = cfg.two_stage
@@ -104,7 +104,7 @@ class Genesis(nn.Module):
                         [input_channels+1, 32, 32, 64, 64],
                         [32, 32, 64, 64, 64],
                         [1, 2, 1, 2, 1],
-                        2*cfg.comp_ldim,
+                        2*cfg.comp_ldim * cfg.K_steps,
                         att_core.last_kernel_size,
                         hn=cfg.enc_norm, gn=cfg.enc_norm),
                     B.Flatten())
@@ -114,7 +114,7 @@ class Genesis(nn.Module):
                         [64, 64, 32, 32, 32],
                         [64, 32, 32, 32, 32],
                         [1, 2, 1, 2, 1],
-                        cfg.comp_ldim,
+                        cfg.comp_ldim * cfg.K_steps,
                         att_core.last_kernel_size,
                         hn=cfg.dec_norm, gn=cfg.dec_norm),
                     nn.Conv2d(32, input_channels, 1))

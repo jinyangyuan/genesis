@@ -148,6 +148,9 @@ def main():
 
     # Load data
     data_loaders = fet.load(config.data_config, config)
+    for key in data_loaders:
+        data_loaders[key].generator = torch.Generator(device='cuda')
+        data_loaders[key].sampler.generator = data_loaders[key].generator
     num_elements = 3 * config.img_size**2  # Assume three input channels
 
     # Load model
@@ -394,9 +397,9 @@ def main():
     model.eval()
     for phase in ['test', 'general']:
         if phase == 'general':
-            model.K_steps = config.K_steps_general
+            model.K_steps = 1
         else:
-            model.K_steps = config.K_steps
+            model.K_steps = 1
         if name_model == 'genesis':
             model.att_steps = model.K_steps
             if model.K_steps > model.std.shape[-1]:
@@ -404,7 +407,7 @@ def main():
                 model.std = torch.cat([model.std, model.std[..., -size_pad:]], dim=-1)
             else:
                 model.std = model.std[..., :model.K_steps]
-        outputs = {key: [] for key in name_outputs}
+        outputs = {key: [] for key in name_outputs if key != 'shp'}
         for data in data_loaders[phase]:
             images = data['input'].cuda()
             sub_outputs = {key: [] for key in outputs}
@@ -415,7 +418,7 @@ def main():
                 apc = torch.stack(stats.x_r_k, dim=1)
                 if name_model == 'genesis':
                     mask = torch.stack(stats.log_m_k, dim=1).exp()
-                    shp = torch.sigmoid(torch.stack(att_stats.x_k, dim=1)[:, :, :1])
+                    shp = None #torch.sigmoid(torch.stack(att_stats.x_k, dim=1)[:, :, :1])
                 else:
                     mask = torch.stack(stats.log_m_r_k, dim=1).exp()
                     shp = None

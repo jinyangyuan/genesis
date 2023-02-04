@@ -51,9 +51,9 @@ class GenesisV2(nn.Module):
     def __init__(self, cfg):
         super(GenesisV2, self).__init__()
         # Configuration
-        self.K_steps = cfg.K_steps
+        self.K_steps = 1
         self.pixel_bound = cfg.pixel_bound
-        self.feat_dim = cfg.feat_dim
+        self.feat_dim = cfg.feat_dim * cfg.K_steps
         self.klm_loss = cfg.klm_loss
         self.detach_mr_in_klm = cfg.detach_mr_in_klm
         self.dynamic_K = cfg.dynamic_K
@@ -83,12 +83,12 @@ class GenesisV2(nn.Module):
             nn.LayerNorm(2*cfg.feat_dim),
             nn.Linear(2*cfg.feat_dim, 2*cfg.feat_dim),
             nn.ReLU(inplace=True),
-            nn.Linear(2*cfg.feat_dim, 2*cfg.feat_dim))
+            nn.Linear(2*cfg.feat_dim, 2*cfg.feat_dim * cfg.K_steps))
         # Decoder
         c = cfg.feat_dim
         self.decoder_module = nn.Sequential(
             B.BroadcastLayer(cfg.img_size // 16),
-            nn.ConvTranspose2d(cfg.feat_dim+2, c, 5, 2, 2, 1),
+            nn.ConvTranspose2d(cfg.feat_dim * cfg.K_steps + 2, c, 5, 2, 2, 1),
             nn.GroupNorm(8, c), nn.ReLU(inplace=True),
             nn.ConvTranspose2d(c, c, 5, 2, 2, 1),
             nn.GroupNorm(8, c), nn.ReLU(inplace=True),

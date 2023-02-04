@@ -31,12 +31,22 @@ for model in 'genesis' 'genesisv2'; do
     K_steps=7
     K_steps_general=10
     run_model
+    name='abstract'
+    img_size=64
+    K_steps=6
+    K_steps_general=8
+    run_model
     name='clevr'
     img_size=128
     K_steps=8
     K_steps_general=12
     run_model
     name='shop'
+    img_size=128
+    K_steps=8
+    K_steps_general=12
+    run_model
+    name='gso'
     img_size=128
     K_steps=8
     K_steps_general=12
